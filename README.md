@@ -4,7 +4,7 @@
 Karınca Optimizasyon Algoritması ile Kısa Yol Bulma Uygulaması
 Bu uygulama, karınca optimizasyon algoritmasını kullanarak bir graf üzerinde en kısa yolu bulmayı sağlar. Kullanıcı, girdi dosyasında grafın yapısını, düğümlerin koordinatlarını ve başlangıç ile bitiş düğümlerini tanımlar. Program daha sonra karıncaları simüle ederek en kısa yolları bulur ve sonuçları kullanıcıya sunar.
 
-.Kullanım
+#Kullanım
 Programı çalıştırmak için terminalde şu komutu kullanabilirsiniz:
 go run . istenilen.txt
 Burada, istenilen.txt dosyası grafın ve diğer gerekli bilgilerin bulunduğu dosyadır. Program bu dosyayı okur, grafı oluşturur ve en kısa yolları bulur.
