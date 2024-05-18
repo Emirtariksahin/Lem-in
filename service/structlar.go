@@ -1,26 +1,21 @@
 package main
 
+// Node, graf yapısındaki düğümleri temsil eder.
 type Node struct {
-	Name        string
-	Coordinates [2]int
-	Occupied    bool
-	Visited     bool
-	AntID       int
-	Distance    float64
-	Previous    *Node
-	Edges       []*Edge // Düğümün kenarları
-	AntCount    int     // Düğümdeki karınca sayısı
+	Name        string  // Düğümün adı
+	Coordinates [2]int  // Düğümün koordinatları
+	Edges       []*Edge // Düğüme bağlı kenarlar
 }
 
+// Edge, graf yapısındaki kenarları temsil eder.
 type Edge struct {
-	Start  *Node
-	End    *Node
-	Weight int // Initial weight (distance)
-	// Additional field for dynamic weight (optional for ACO)
-	Distance float64
+	Start  *Node // Kenarın başlangıç düğümü
+	End    *Node // Kenarın bitiş düğümü
+	Weight int   // Kenarın başlangıç ağırlığı (mesafe vb.)
 }
 
+// Graph, graf yapısını temsil eder.
 type Graph struct {
-	Nodes []*Node
-	Edges []*Edge
+	Nodes []*Node // Grafın düğümleri
+	Edges []*Edge // Grafın kenarları
 }

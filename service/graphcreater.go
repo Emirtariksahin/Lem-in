@@ -5,25 +5,26 @@ import (
 	"strings"
 )
 
-// Create a bidirectional graph
+// Bidirectional (çift yönlü) bir graf oluşturma fonksiyonu
 func createGraph(kordinatlar map[string][2]int, baglantilar []string) *Graph {
-	nodes := make(map[string]*Node)
-	var edges []*Edge
+	nodes := make(map[string]*Node) // Düğümleri saklayacak harita
+	var edges []*Edge               // Kenarları saklayacak dilim
 
-	// Create nodes
+	// Düğümleri oluştur
 	for name, coords := range kordinatlar {
 		node := &Node{Name: name, Coordinates: coords}
 		nodes[name] = node
 	}
 
-	// Create edges (bidirectionally)
+	// Kenarları oluştur (çift yönlü)
 	for _, conn := range baglantilar {
 		parts := strings.Split(conn, "-")
 		startNode := nodes[parts[0]]
 		endNode := nodes[parts[1]]
 
+		// Başlangıç ve bitiş düğümleri varsa
 		if startNode != nil && endNode != nil {
-			// Create edge in both directions
+			// Her iki yönde kenar oluştur
 			edge1 := &Edge{Start: startNode, End: endNode, Weight: 1}
 			edge2 := &Edge{Start: endNode, End: startNode, Weight: 1}
 
@@ -33,7 +34,7 @@ func createGraph(kordinatlar map[string][2]int, baglantilar []string) *Graph {
 		}
 	}
 
-	// Create the graph
+	// Grafı oluştur
 	graph := &Graph{}
 	for _, node := range nodes {
 		graph.Nodes = append(graph.Nodes, node)
@@ -43,14 +44,17 @@ func createGraph(kordinatlar map[string][2]int, baglantilar []string) *Graph {
 	return graph
 }
 
-// Print the graph
+// Grafı yazdırma fonksiyonu
 func (g *Graph) String() string {
 	var nodesStr string
+
+	// Düğümleri stringe dönüştür
 	for _, node := range g.Nodes {
 		nodesStr += fmt.Sprintf("[%s %v] ", node.Name, node.Coordinates)
 	}
 
 	var edgesStr string
+	// Kenarları stringe dönüştür
 	for _, edge := range g.Edges {
 		edgesStr += fmt.Sprintf("[%s-%s] ", edge.Start.Name, edge.End.Name)
 	}
