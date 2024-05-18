@@ -93,9 +93,14 @@ func main() {
 	// Düğümler olarak bitiş düğümü eklenmiş benzersiz yolları yazdır
 	finalNodePaths := convertToNodePaths(finalPaths, graph)
 
+	//stringi düğümlere dönüştürdüğün değerleri yazdır
 	fmt.Println("\nDüğümler Olarak Bitiş Düğümü Eklenmiş Benzersiz Yollar:")
 	printNodePaths(finalNodePaths)
+
+	//bir boşluk bırak
 	println()
+
+	//Karıncaları Hareket Ettir
 	SimulateAnts(graph, antsayisi, startNode, endNode, finalNodePaths)
 }
 
@@ -151,7 +156,7 @@ func convertPathsToString(paths [][]*Node) [][]string {
 	return stringPaths
 }
 
-// Yol sayılarını hesaplayan fonksiyon
+// Yol sayılarını yani countu hesaplayan fonksiyon
 func calculatePathCounts(paths [][]string) []int {
 	counts := make([]int, len(paths))
 	for i := 0; i < len(paths); i++ {
