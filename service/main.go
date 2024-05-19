@@ -4,10 +4,14 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
+	"time"
 )
 
 // Ana fonksiyon
 func main() {
+	// Zaman ölçümü başlat
+	startTime := time.Now()
 	// Komut satırı argümanlarını kontrol et
 	if len(os.Args) != 2 {
 		fmt.Println("Kullanım: go run . istenilen.txt")
@@ -41,9 +45,36 @@ func main() {
 	if err != nil {
 		fmt.Println("Hata:", err)
 	}
-
+	//eğer karınca sayısı 0 sa hata mesajı dönder
+	if antsayisi == 0 {
+		fmt.Println("ERROR: invalid data format")
+		return
+	}
 	// Bağlantıları ayıkla
 	baglantilar := baglantilar(sentences)
+
+	// Bağlantıları işleme ,ona göre hata mesajı döndürme
+	var once []string  // "-" işaretinden öncekiler
+	var sonra []string // "-" işaretinden sonrakiler
+
+	for _, baglanti := range baglantilar {
+		// "-" işaretiyle ayır
+		parts := strings.Split(baglanti, "-")
+		if len(parts) == 2 {
+			once = append(once, parts[0])
+			sonra = append(sonra, parts[1])
+		}
+	}
+
+	for i := 0; i < len(once); i++ {
+
+		if string(once[i]) == string(sonra[i]) {
+			fmt.Println("ERROR: invalid data format")
+			return
+
+		}
+	}
+
 	// Graf oluştur
 	graph := createGraph(kordinatlar, baglantilar)
 	startNode := graph.FindNodeByName(start)
@@ -102,6 +133,10 @@ func main() {
 
 	//Karıncaları Hareket Ettir
 	SimulateAnts(graph, antsayisi, startNode, endNode, finalNodePaths)
+	println()
+	// Zaman ölçümü bitir
+	elapsed := time.Since(startTime)
+	fmt.Printf("Kodun çalışması %.8f saniye sürdü.\n", elapsed.Seconds())
 }
 
 // Graf düğümlerini isimle bulma fonksiyonu
