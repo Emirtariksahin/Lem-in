@@ -1,5 +1,5 @@
 package main
-
+//
 // Bir yol içinde bir düğümün olup olmadığını kontrol eden yardımcı fonksiyon
 func containsNode(path []*Node, node *Node) bool {
 	for _, n := range path {

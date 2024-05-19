@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 )
-
+//
 // parseCoordinates fonksiyonu, cümlelerden koordinatları çıkarır ve bir harita olarak döndürür
 func parseCoordinates(sentences []string) (map[string][2]int, error) {
 	coordinates := make(map[string][2]int) // Koordinatları saklayacak harita oluşturulur

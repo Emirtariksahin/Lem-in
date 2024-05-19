@@ -1,5 +1,5 @@
 package main
-
+//
 // Node, graf yapısındaki düğümleri temsil eder.
 type Node struct {
 	Name        string  // Düğümün adı
