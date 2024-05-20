@@ -1,7 +1,7 @@
 package main
+
 //
 import (
-	"fmt"
 	"strings"
 )
 
@@ -35,29 +35,6 @@ func createGraph(kordinatlar map[string][2]int, baglantilar []string) *Graph {
 	}
 
 	// Grafı oluştur
-	graph := &Graph{}
-	for _, node := range nodes {
-		graph.Nodes = append(graph.Nodes, node)
-	}
-	graph.Edges = edges
-
+	graph := &Graph{Nodes: nodes, Edges: edges}
 	return graph
-}
-
-// Grafı yazdırma fonksiyonu
-func (g *Graph) String() string {
-	var nodesStr string
-
-	// Düğümleri stringe dönüştür
-	for _, node := range g.Nodes {
-		nodesStr += fmt.Sprintf("[%s %v] ", node.Name, node.Coordinates)
-	}
-
-	var edgesStr string
-	// Kenarları stringe dönüştür
-	for _, edge := range g.Edges {
-		edgesStr += fmt.Sprintf("[%s-%s] ", edge.Start.Name, edge.End.Name)
-	}
-
-	return fmt.Sprintf("Nodes: %s\nEdges: %s", nodesStr, edgesStr)
 }

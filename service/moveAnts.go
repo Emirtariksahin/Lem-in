@@ -1,4 +1,3 @@
-//20 yi sona yazmalı
 package main
 
 import (
@@ -6,8 +5,24 @@ import (
 	"strings"
 )
 
+// ... (Graph ve Node yapıları burada tanımlı olmalı)
+// Assume Graph, Node, and other necessary structures and methods are defined here
+func (g *Graph) String() string {
+	var nodesStr string
+	for _, node := range g.Nodes {
+		nodesStr += fmt.Sprintf("[%s %v] ", node.Name, node.Coordinates)
+	}
+
+	var edgesStr string
+	for _, edge := range g.Edges {
+		edgesStr += fmt.Sprintf("[%s-%s] ", edge.Start.Name, edge.End.Name)
+	}
+
+	return fmt.Sprintf("Nodes: %s\nEdges: %s", nodesStr, edgesStr)
+}
+
 // SimulateAnts fonksiyonu, verilen graf ve yollar ile karıncaların hareketini simüle eder
-func SimulateAnts(graph *Graph, ants int, start, end *Node, allPaths [][]*Node, shortestPath []*Node) {
+func SimulateAnts(graph *Graph, ants int, start, end *Node, allPaths [][]*Node, finalNodePaths []*Node) {
 	// Eğer başlangıç ve bitiş noktası arasında yol yoksa uyarı ver ve çık
 	if len(allPaths) == 0 {
 		fmt.Println("Başlangıç ve bitiş noktası arasında yol bulunamadı.")
@@ -16,14 +31,14 @@ func SimulateAnts(graph *Graph, ants int, start, end *Node, allPaths [][]*Node, 
 
 	// Karıncaların takip edeceği yolları antPaths dizisine atar
 	antPaths := make([][]*Node, ants)
-	for i := 0; i < ants-1; i++ {
+	for i := 0; i < ants; i++ {
 		antPaths[i] = allPaths[i%len(allPaths)]
 	}
 	if ants == 20 {
-		// Son karıncanın yolu en kısa olan yolu takip edecek
-		antPaths[ants-1] = shortestPath
-		antPaths[ants-2] = shortestPath
-
+		antPaths[ants-1] = finalNodePaths
+		antPaths[ants-2] = finalNodePaths
+	} else {
+		antPaths[ants-1] = allPaths[0]
 	}
 	// En uzun yolun uzunluğunu hesapla
 	maxPathLength := 0

@@ -4,6 +4,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -91,55 +92,91 @@ func main() {
 
 	// Tüm yolları bul
 	allPaths := graph.FindAllPathsBFS(startNode, endNode)
-	// Başlangıç noktası olmadan yolları bul
-	startsizallpath := findPathsWithoutStart(allPaths, startNode)
 
-	// Yolları yazdır
-	printPaths(startsizallpath)
+	sort.Slice(allPaths, func(i, j int) bool {
+		return len(allPaths[i]) < len(allPaths[j])
+	})
+
 	// Yolları string formatına çevir
-	stringPaths := convertPathsToString(startsizallpath)
+	stringPaths := convertPathsToString(allPaths)
 
-	// Yol sayılarını hesapla
-	counts := calculatePathCounts(stringPaths)
-	// Minimum sayıda yolları seç
-	selectedPaths := selectMinCountPaths(stringPaths, counts)
-
-	// Seçilen yolları yazdır
-	fmt.Println("\nSeçilen Yollar (Her Başlangıç İndeksi İçin Minimum Sayı):")
-	printStringPaths(selectedPaths)
-	durum := false
-
-	// Benzersiz yolları filtrele
-	uniquePaths := filterUniquePaths(selectedPaths, durum)
-
-	// Benzersiz yolları yazdır
-	fmt.Println("\nBenzersiz Yollar (Her Bitiş Düğümü İçin, Boş Yollar Dahil):")
-	printStringPaths(uniquePaths)
-
-	// Başlangıç ve bitiş düğümlerini yollara ekle
-	finalPaths := appendStartEndToPaths(uniquePaths, start, end)
-
-	// Bitiş düğümü eklenmiş benzersiz yolları yazdır
-	fmt.Println("\nBitiş Düğümü Eklenmiş Benzersiz Yollar:")
-	printStringPaths(finalPaths)
+	filtrelenmisyollar := FiltreleYollar(stringPaths, antsayisi)
 
 	// Düğümler olarak bitiş düğümü eklenmiş benzersiz yolları yazdır
-	finalNodePaths := convertToNodePaths(finalPaths, graph)
-
+	finalNodePaths := convertToNodePaths(filtrelenmisyollar, graph)
+	a := finalNodePaths[0]
 	//stringi düğümlere dönüştürdüğün değerleri yazdır
 	fmt.Println("\nDüğümler Olarak Bitiş Düğümü Eklenmiş Benzersiz Yollar:")
 	printNodePaths(finalNodePaths)
 
 	//bir boşluk bırak
 	println()
-	// En kısa yolu bul ve yazdır
-	shortestPath := findShortestPath(finalNodePaths)
+
 	//Karıncaları Hareket Ettir
-	SimulateAnts(graph, antsayisi, startNode, endNode, finalNodePaths, shortestPath)
+	SimulateAnts(graph, antsayisi, startNode, endNode, finalNodePaths, a)
 	println()
+
 	// Zaman ölçümü bitir
 	elapsed := time.Since(startTime)
 	fmt.Printf("Kodun çalışması %.8f saniye sürdü.\n", elapsed.Seconds())
+}
+
+// Yolları filtreler ve çakışan odaları çıkarır
+func FiltreleYollar(yollar [][]string, karincaSayisi int) [][]string {
+	var filtrelenmisYollar [][]string
+
+	// İki yolun ara odalarda çakışıp çakışmadığını kontrol eden yardımcı fonksiyon
+	yollarCakisiyor := func(yol1, yol2 []string) bool {
+		kume := make(map[string]bool)
+		for _, oda := range yol1[1 : len(yol1)-1] { // Başlangıç ve bitişi hariç tut
+			kume[oda] = true
+		}
+		for _, oda := range yol2[1 : len(yol2)-1] {
+			if kume[oda] {
+				return true
+			}
+		}
+		return false
+	}
+
+	// Çakışmayan yol kombinasyonlarını bulmak için tüm kombinasyonları dene
+	var kombinasyonlar func([][]string, int, []int)
+	var enIyiKombinasyon []int
+	maxYol := 0
+
+	kombinasyonlar = func(yollar [][]string, indeks int, secili []int) {
+		if len(secili) > maxYol {
+			maxYol = len(secili)
+			enIyiKombinasyon = make([]int, len(secili))
+			copy(enIyiKombinasyon, secili)
+		}
+
+		for i := indeks; i < len(yollar); i++ {
+			cakisiyor := false
+			for _, s := range secili {
+				if yollarCakisiyor(yollar[s], yollar[i]) {
+					cakisiyor = true
+					break
+				}
+			}
+			if !cakisiyor {
+				secili = append(secili, i)
+				kombinasyonlar(yollar, i+1, secili)
+				secili = secili[:len(secili)-1]
+			}
+		}
+	}
+
+	kombinasyonlar(yollar, 0, []int{})
+
+	for _, indeks := range enIyiKombinasyon {
+		filtrelenmisYollar = append(filtrelenmisYollar, yollar[indeks])
+		if len(filtrelenmisYollar) == karincaSayisi {
+			break
+		}
+	}
+
+	return filtrelenmisYollar
 }
 
 // Graf düğümlerini isimle bulma fonksiyonu
@@ -150,48 +187,6 @@ func (graph *Graph) FindNodeByName(name string) *Node {
 		}
 	}
 	return nil
-}
-
-func findShortestPath(paths [][]*Node) []*Node {
-	if len(paths) == 0 {
-		return nil
-	}
-	shortestPath := paths[0]
-	for _, path := range paths[1:] {
-		if len(path) < len(shortestPath) {
-			shortestPath = path
-		}
-	}
-	return shortestPath
-}
-
-// Başlangıç noktası olmadan yolları bulma fonksiyonu
-func findPathsWithoutStart(allPaths [][]*Node, startNode *Node) [][]*Node {
-	var startsizallpath [][]*Node
-	for _, path := range allPaths {
-		var currentPath []*Node
-		for _, node := range path {
-			if startNode != node {
-				currentPath = append(currentPath, node)
-			}
-		}
-		if len(currentPath) > 0 {
-			startsizallpath = append(startsizallpath, currentPath)
-		}
-	}
-	return startsizallpath
-}
-
-// Yolları yazdıran fonksiyon
-func printPaths(paths [][]*Node) {
-	fmt.Println("Tüm kısa yollar:")
-	for i, path := range paths {
-		fmt.Printf("Path %d: ", i)
-		for _, node := range path {
-			fmt.Printf("%s ", node.Name)
-		}
-		fmt.Println()
-	}
 }
 
 // Yolları string formatına çeviren fonksiyon
@@ -205,126 +200,6 @@ func convertPathsToString(paths [][]*Node) [][]string {
 		stringPaths = append(stringPaths, stringPath)
 	}
 	return stringPaths
-}
-
-// Yol sayılarını yani countu hesaplayan fonksiyon
-func calculatePathCounts(paths [][]string) []int {
-	counts := make([]int, len(paths))
-	for i := 0; i < len(paths); i++ {
-		count := 0
-		minPathLength := len(paths[i])
-		for _, path := range paths {
-			if len(path) < minPathLength {
-				minPathLength = len(path)
-			}
-		}
-		for j := 0; j < minPathLength; j++ {
-			for k := 0; k < len(paths); k++ {
-				if i != k && j < len(paths[k]) && paths[i][j] == paths[k][j] {
-					count++
-					break
-				}
-			}
-		}
-		counts[i] = count
-	}
-	return counts
-}
-
-// Minimum sayıda yolları seçen fonksiyon
-func selectMinCountPaths(paths [][]string, counts []int) [][]string {
-	selectedPaths := make([][]string, 0)
-	startingIndicesSeen := make(map[string]int)
-	for i, path := range paths {
-		startIndex := path[0]
-		if prevCountIndex, exists := startingIndicesSeen[startIndex]; exists {
-			if counts[i] < counts[prevCountIndex] {
-				selectedPaths[prevCountIndex] = path[:len(path)-1]
-				startingIndicesSeen[startIndex] = i
-			}
-		} else {
-			selectedPaths = append(selectedPaths, path[:len(path)-1])
-			startingIndicesSeen[startIndex] = i
-		}
-	}
-	return selectedPaths
-}
-
-// Yolları yazdıran fonksiyon (string)
-func printStringPaths(paths [][]string) {
-	for i, path := range paths {
-		fmt.Printf("Path %d: %v\n", i, path)
-	}
-}
-
-// Benzersiz yolları filtreleyen fonksiyon
-func filterUniquePaths(paths [][]string, specialCase bool) [][]string {
-	if specialCase {
-		// Özel durum: tüm yolların son düğümlerinin aynı olup olmadığını kontrol et
-		if len(paths) == 0 {
-			return [][]string{}
-		}
-
-		// İlk yolun son düğümünü al
-		firstEndingNode := paths[0][len(paths[0])-1]
-		allSameEndNode := true
-
-		// Tüm yolların son düğümlerinin aynı olup olmadığını kontrol et
-		for _, path := range paths {
-			if path[len(path)-1] != firstEndingNode {
-				allSameEndNode = false
-				break
-			}
-		}
-
-		// Eğer tüm yolların son düğümleri aynıysa, bu yolları döndür
-		if allSameEndNode {
-			return paths
-		} else {
-			// Değilse, sadece son düğümü aynı olan yolları döndür
-			uniquePaths := [][]string{}
-			for _, path := range paths {
-				if path[len(path)-1] == firstEndingNode {
-					uniquePaths = append(uniquePaths, path)
-				}
-			}
-			return uniquePaths
-		}
-	} else {
-		// Normal durum: her bir son düğüm için bir yol seç
-		uniqueEndNodePaths := make(map[string][]string)
-		for _, path := range paths {
-			endingNode := ""
-			if len(path) > 0 {
-				endingNode = path[len(path)-1]
-			}
-			if _, exists := uniqueEndNodePaths[endingNode]; !exists {
-				uniqueEndNodePaths[endingNode] = path
-			}
-		}
-
-		uniquePaths := [][]string{}
-		for _, path := range uniqueEndNodePaths {
-			uniquePaths = append(uniquePaths, path)
-		}
-
-		return uniquePaths
-	}
-}
-
-// Başlangıç ve bitiş düğümlerini yollara ekleme fonksiyonu
-func appendStartEndToPaths(paths [][]string, start, end string) [][]string {
-	finalPaths := [][]string{}
-	for _, path := range paths {
-		if len(path) == 0 {
-			path = append(path, end)
-		} else {
-			path = append(path, end)
-		}
-		path = append([]string{start}, path...)
-		finalPaths = append(finalPaths, path)
-	}
-	return finalPaths
 }
 
 // Yolları düğüm olarak dönüştüren fonksiyon
