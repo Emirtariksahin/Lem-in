@@ -106,7 +106,7 @@ func main() {
 	finalNodePaths := convertToNodePaths(filtrelenmisyollar, graph)
 	a := finalNodePaths[0]
 	//stringi düğümlere dönüştürdüğün değerleri yazdır
-	fmt.Println("\nDüğümler Olarak Bitiş Düğümü Eklenmiş Benzersiz Yollar:")
+	fmt.Println("\nDüğümler Olarak Bitiş Düğümü Eklenmiş Benzersiz Filtrelenmiş Yollar:")
 	printNodePaths(finalNodePaths)
 
 	//bir boşluk bırak
