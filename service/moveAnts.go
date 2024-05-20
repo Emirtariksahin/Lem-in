@@ -1,10 +1,11 @@
+//20 yi sona yazmalı
 package main
 
 import (
 	"fmt"
 	"strings"
 )
-//
+
 // SimulateAnts fonksiyonu, verilen graf ve yollar ile karıncaların hareketini simüle eder
 func SimulateAnts(graph *Graph, ants int, start, end *Node, allPaths [][]*Node) {
 	// Eğer başlangıç ve bitiş noktası arasında yol yoksa uyarı ver ve çık
@@ -15,9 +16,11 @@ func SimulateAnts(graph *Graph, ants int, start, end *Node, allPaths [][]*Node) 
 
 	// Karıncaların takip edeceği yolları antPaths dizisine atar
 	antPaths := make([][]*Node, ants)
-	for i := 0; i < ants; i++ {
+	for i := 0; i < ants-1; i++ {
 		antPaths[i] = allPaths[i%len(allPaths)]
 	}
+	// Son karıncanın yolu en kısa olan yolu takip edecek
+	antPaths[ants-1] = allPaths[0]
 
 	// En uzun yolun uzunluğunu hesapla
 	maxPathLength := 0
@@ -30,7 +33,8 @@ func SimulateAnts(graph *Graph, ants int, start, end *Node, allPaths [][]*Node) 
 	// Karıncaların pozisyonlarını, adım sayılarını ve düğüm işgal durumlarını tutan diziler oluştur
 	antPositions := make([]int, ants)
 	nodeOccupied := make(map[*Node]bool)
-	antSteps := make([]int, ants) // Karıncaların attığı adım sayısını takip eder
+	antSteps := make([]int, ants)      // Karıncaların attığı adım sayısını takip eder
+	finishedAnts := make([]bool, ants) // Bitiş düğümüne ulaşan karıncaları takip eder
 
 	// Başlangıçta tüm karıncaların pozisyonlarını ve adım sayılarını başlat
 	for i := 0; i < ants; i++ {
@@ -53,9 +57,9 @@ func SimulateAnts(graph *Graph, ants int, start, end *Node, allPaths [][]*Node) 
 
 		// Her karınca için hareketi kontrol eder
 		for i := 0; i < ants; i++ {
-			// Eğer karınca bitiş düğümüne ulaştıysa devam et
-			if antPositions[i] >= len(antPaths[i]) {
-				continue // Eğer bu karınca bitiş düğümüne ulaşmışsa atla
+			// Eğer karınca bitiş düğümüne ulaştıysa veya bitiş düğümüne ulaşan bir karınca varsa devam et
+			if antPositions[i] >= len(antPaths[i]) || finishedAnts[i] {
+				continue // Eğer bu karınca bitiş düğümüne ulaşmışsa veya bitiş düğümüne ulaşan bir karınca varsa atla
 			}
 
 			// Karınca adımlarını en uzun yola göre kontrol et
@@ -81,6 +85,11 @@ func SimulateAnts(graph *Graph, ants int, start, end *Node, allPaths [][]*Node) 
 					nodeOccupied[nextNode] = true
 					antPositions[i]++ // Karıncayı bir sonraki düğüme taşı
 					antSteps[i]++     // Karıncanın adım sayısını arttır
+
+					// Eğer karınca bitiş düğümüne ulaştıysa
+					if nextNode == end {
+						finishedAnts[i] = true // Karıncayı bitiş düğümüne ulaşmış olarak işaretle
+					}
 				}
 
 				// Eğer karınca henüz yolunu tamamlamadıysa
@@ -94,11 +103,12 @@ func SimulateAnts(graph *Graph, ants int, start, end *Node, allPaths [][]*Node) 
 
 		// Her turun çıktısını yazdır
 		fmt.Println(strings.TrimSpace(roundOutput))
-		round++
 
 		// Eğer tüm karıncalar bitiş düğümüne ulaştıysa döngüden çık
 		if allAntsFinished {
 			break // Tüm karıncalar yollarını tamamladı
 		}
+		round++
 	}
+
 }
