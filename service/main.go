@@ -1,4 +1,5 @@
 package main
+
 //
 import (
 	"fmt"
@@ -106,9 +107,10 @@ func main() {
 	// Seçilen yolları yazdır
 	fmt.Println("\nSeçilen Yollar (Her Başlangıç İndeksi İçin Minimum Sayı):")
 	printStringPaths(selectedPaths)
+	durum := false
 
 	// Benzersiz yolları filtrele
-	uniquePaths := filterUniquePaths(selectedPaths)
+	uniquePaths := filterUniquePaths(selectedPaths, durum)
 
 	// Benzersiz yolları yazdır
 	fmt.Println("\nBenzersiz Yollar (Her Bitiş Düğümü İçin, Boş Yollar Dahil):")
@@ -130,9 +132,10 @@ func main() {
 
 	//bir boşluk bırak
 	println()
-
+	// En kısa yolu bul ve yazdır
+	shortestPath := findShortestPath(finalNodePaths)
 	//Karıncaları Hareket Ettir
-	SimulateAnts(graph, antsayisi, startNode, endNode, finalNodePaths)
+	SimulateAnts(graph, antsayisi, startNode, endNode, finalNodePaths, shortestPath)
 	println()
 	// Zaman ölçümü bitir
 	elapsed := time.Since(startTime)
@@ -147,6 +150,19 @@ func (graph *Graph) FindNodeByName(name string) *Node {
 		}
 	}
 	return nil
+}
+
+func findShortestPath(paths [][]*Node) []*Node {
+	if len(paths) == 0 {
+		return nil
+	}
+	shortestPath := paths[0]
+	for _, path := range paths[1:] {
+		if len(path) < len(shortestPath) {
+			shortestPath = path
+		}
+	}
+	return shortestPath
 }
 
 // Başlangıç noktası olmadan yolları bulma fonksiyonu
@@ -242,22 +258,58 @@ func printStringPaths(paths [][]string) {
 }
 
 // Benzersiz yolları filtreleyen fonksiyon
-func filterUniquePaths(paths [][]string) [][]string {
-	uniqueEndNodePaths := make(map[string][]string)
-	for _, path := range paths {
-		endingNode := ""
-		if len(path) > 0 {
-			endingNode = path[len(path)-1]
+func filterUniquePaths(paths [][]string, specialCase bool) [][]string {
+	if specialCase {
+		// Özel durum: tüm yolların son düğümlerinin aynı olup olmadığını kontrol et
+		if len(paths) == 0 {
+			return [][]string{}
 		}
-		if _, exists := uniqueEndNodePaths[endingNode]; !exists {
-			uniqueEndNodePaths[endingNode] = path
+
+		// İlk yolun son düğümünü al
+		firstEndingNode := paths[0][len(paths[0])-1]
+		allSameEndNode := true
+
+		// Tüm yolların son düğümlerinin aynı olup olmadığını kontrol et
+		for _, path := range paths {
+			if path[len(path)-1] != firstEndingNode {
+				allSameEndNode = false
+				break
+			}
 		}
+
+		// Eğer tüm yolların son düğümleri aynıysa, bu yolları döndür
+		if allSameEndNode {
+			return paths
+		} else {
+			// Değilse, sadece son düğümü aynı olan yolları döndür
+			uniquePaths := [][]string{}
+			for _, path := range paths {
+				if path[len(path)-1] == firstEndingNode {
+					uniquePaths = append(uniquePaths, path)
+				}
+			}
+			return uniquePaths
+		}
+	} else {
+		// Normal durum: her bir son düğüm için bir yol seç
+		uniqueEndNodePaths := make(map[string][]string)
+		for _, path := range paths {
+			endingNode := ""
+			if len(path) > 0 {
+				endingNode = path[len(path)-1]
+			}
+			if _, exists := uniqueEndNodePaths[endingNode]; !exists {
+				uniqueEndNodePaths[endingNode] = path
+			}
+		}
+
+		uniquePaths := [][]string{}
+		for _, path := range uniqueEndNodePaths {
+			uniquePaths = append(uniquePaths, path)
+		}
+
+		return uniquePaths
 	}
-	uniquePaths := [][]string{}
-	for _, path := range uniqueEndNodePaths {
-		uniquePaths = append(uniquePaths, path)
-	}
-	return uniquePaths
 }
 
 // Başlangıç ve bitiş düğümlerini yollara ekleme fonksiyonu

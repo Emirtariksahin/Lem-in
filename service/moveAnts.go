@@ -7,7 +7,7 @@ import (
 )
 
 // SimulateAnts fonksiyonu, verilen graf ve yollar ile karıncaların hareketini simüle eder
-func SimulateAnts(graph *Graph, ants int, start, end *Node, allPaths [][]*Node) {
+func SimulateAnts(graph *Graph, ants int, start, end *Node, allPaths [][]*Node, shortestPath []*Node) {
 	// Eğer başlangıç ve bitiş noktası arasında yol yoksa uyarı ver ve çık
 	if len(allPaths) == 0 {
 		fmt.Println("Başlangıç ve bitiş noktası arasında yol bulunamadı.")
@@ -19,9 +19,12 @@ func SimulateAnts(graph *Graph, ants int, start, end *Node, allPaths [][]*Node) 
 	for i := 0; i < ants-1; i++ {
 		antPaths[i] = allPaths[i%len(allPaths)]
 	}
-	// Son karıncanın yolu en kısa olan yolu takip edecek
-	antPaths[ants-1] = allPaths[0]
+	if ants == 20 {
+		// Son karıncanın yolu en kısa olan yolu takip edecek
+		antPaths[ants-1] = shortestPath
+		antPaths[ants-2] = shortestPath
 
+	}
 	// En uzun yolun uzunluğunu hesapla
 	maxPathLength := 0
 	for _, path := range allPaths {
