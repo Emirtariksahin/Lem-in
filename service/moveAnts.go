@@ -18,7 +18,7 @@ func SimulateAnts(graph *Graph, ants int, start, end *Node, allPaths [][]*Node, 
 	for i := 0; i < ants; i++ {
 		antPaths[i] = allPaths[i%len(allPaths)]
 	}
-
+	//son karıncayi kısa yoldan götür
 	antPaths[ants-1] = allPaths[0]
 	// En uzun yolun uzunluğunu hesapla
 	maxPathLength := 0
