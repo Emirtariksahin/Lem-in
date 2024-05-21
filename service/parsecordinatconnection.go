@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"strings"
 )
+
 //
 // parseCoordinates fonksiyonu, cümlelerden koordinatları çıkarır ve bir harita olarak döndürür
 func parseCoordinates(sentences []string) (map[string][2]int, error) {
@@ -27,6 +28,17 @@ func parseCoordinates(sentences []string) (map[string][2]int, error) {
 		}
 	}
 	return coordinates, nil // Koordinatları ve bir hata olmadığını döndürür
+}
+
+// baglantilar fonksiyonu, verilen cümleler içinde bağlantıları (kenarları) ayıklar ve bir dilim olarak döndürür.
+func baglantilar(sentences []string) []string {
+	var baglanitlar []string // Bağlantıları tutacak bir dilim oluşturulur
+	for _, a := range sentences {
+		if strings.Contains(a, "-") { // Satır içinde "-" içeriyorsa, bir bağlantı olduğunu varsayar
+			baglanitlar = append(baglanitlar, a) // Bağlantıyı dilime ekler
+		}
+	}
+	return baglanitlar // Bağlantıları döndürür
 }
 
 // parseStartEndCoordinates fonksiyonu, başlangıç ve bitiş koordinatlarını bulur ve döndürür

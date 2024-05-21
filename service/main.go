@@ -41,7 +41,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Karınca sayısını al
+	/// Karınca sayısını al
 	antsayisistring := sentences[0]
 	antsayisi, err := strconv.Atoi(antsayisistring)
 	if err != nil {
