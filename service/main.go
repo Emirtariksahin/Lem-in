@@ -100,7 +100,7 @@ func main() {
 	// Yolları string formatına çevir
 	stringPaths := convertPathsToString(allPaths)
 
-	filtrelenmisyollar := FiltreleYollar(stringPaths, antsayisi)
+	filtrelenmisyollar := YollariFiltrele(stringPaths, antsayisi)
 
 	// Düğümler olarak bitiş düğümü eklenmiş benzersiz yolları yazdır
 	finalNodePaths := convertToNodePaths(filtrelenmisyollar, graph)
@@ -122,61 +122,60 @@ func main() {
 }
 
 // Yolları filtreler ve çakışan odaları çıkarır
-func FiltreleYollar(yollar [][]string, karincaSayisi int) [][]string {
-	var filtrelenmisYollar [][]string
+func YollariFiltrele(yollar [][]string, karincaSayisi int) [][]string {
+	var uygunYollar [][]string
 
 	// İki yolun ara odalarda çakışıp çakışmadığını kontrol eden yardımcı fonksiyon
-	yollarCakisiyor := func(yol1, yol2 []string) bool {
-		kume := make(map[string]bool)
-		for _, oda := range yol1[1 : len(yol1)-1] { // Başlangıç ve bitişi hariç tut
-			kume[oda] = true
+	odalarCakisiyorMu := func(yol1, yol2 []string) bool {
+		odalar := make(map[string]bool)
+		for _, oda := range yol1[1 : len(yol1)-1] { // Başlangıç ve bitiş odalarını hariç tut
+			odalar[oda] = true
 		}
 		for _, oda := range yol2[1 : len(yol2)-1] {
-			if kume[oda] {
+			if odalar[oda] {
 				return true
 			}
 		}
 		return false
 	}
+	// En fazla sayıda çakışmayan yolu bulmak için tüm kombinasyonları dene
+	var kombinasyonlariDeneyerekBul func([][]string, int, []int)
+	var enIyiSecim []int
+	enFazlaYol := 0
 
-	// Çakışmayan yol kombinasyonlarını bulmak için tüm kombinasyonları dene
-	var kombinasyonlar func([][]string, int, []int)
-	var enIyiKombinasyon []int
-	maxYol := 0
-
-	kombinasyonlar = func(yollar [][]string, indeks int, secili []int) {
-		if len(secili) > maxYol {
-			maxYol = len(secili)
-			enIyiKombinasyon = make([]int, len(secili))
-			copy(enIyiKombinasyon, secili)
+	kombinasyonlariDeneyerekBul = func(yollar [][]string, index int, secilenler []int) {
+		if len(secilenler) > enFazlaYol {
+			enFazlaYol = len(secilenler)
+			enIyiSecim = make([]int, len(secilenler))
+			copy(enIyiSecim, secilenler)
 		}
 
-		for i := indeks; i < len(yollar); i++ {
+		for i := index; i < len(yollar); i++ {
 			cakisiyor := false
-			for _, s := range secili {
-				if yollarCakisiyor(yollar[s], yollar[i]) {
+			for _, sec := range secilenler {
+				if odalarCakisiyorMu(yollar[sec], yollar[i]) {
 					cakisiyor = true
 					break
 				}
 			}
 			if !cakisiyor {
-				secili = append(secili, i)
-				kombinasyonlar(yollar, i+1, secili)
-				secili = secili[:len(secili)-1]
+				secilenler = append(secilenler, i)
+				kombinasyonlariDeneyerekBul(yollar, i+1, secilenler)
+				secilenler = secilenler[:len(secilenler)-1]
 			}
 		}
 	}
 
-	kombinasyonlar(yollar, 0, []int{})
+	kombinasyonlariDeneyerekBul(yollar, 0, []int{})
 
-	for _, indeks := range enIyiKombinasyon {
-		filtrelenmisYollar = append(filtrelenmisYollar, yollar[indeks])
-		if len(filtrelenmisYollar) == karincaSayisi {
+	for _, index := range enIyiSecim {
+		uygunYollar = append(uygunYollar, yollar[index])
+		if len(uygunYollar) == karincaSayisi {
 			break
 		}
 	}
 
-	return filtrelenmisYollar
+	return uygunYollar
 }
 
 // Graf düğümlerini isimle bulma fonksiyonu
