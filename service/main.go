@@ -41,6 +41,9 @@ func main() {
 		os.Exit(1)
 	}
 
+	for _, line := range sentences {
+		fmt.Println(string(line))
+	}
 	/// Karınca sayısını al
 	antsayisistring := sentences[0]
 	antsayisi, err := strconv.Atoi(antsayisistring)
