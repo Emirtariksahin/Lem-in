@@ -5,7 +5,6 @@ import (
 	"strings"
 )
 
-
 // SimulateAnts fonksiyonu, verilen graf ve yollar ile karıncaların hareketini simüle eder
 func SimulateAnts(graph *Graph, ants int, start, end *Node, allPaths [][]*Node, finalNodePaths []*Node) {
 	// Eğer başlangıç ve bitiş noktası arasında yol yoksa uyarı ver ve çık
@@ -19,12 +18,8 @@ func SimulateAnts(graph *Graph, ants int, start, end *Node, allPaths [][]*Node, 
 	for i := 0; i < ants; i++ {
 		antPaths[i] = allPaths[i%len(allPaths)]
 	}
-	if ants == 20 {
-		antPaths[ants-1] = finalNodePaths
-		antPaths[ants-2] = finalNodePaths
-	} else {
-		antPaths[ants-1] = allPaths[0]
-	}
+
+	antPaths[ants-1] = allPaths[0]
 	// En uzun yolun uzunluğunu hesapla
 	maxPathLength := 0
 	for _, path := range allPaths {
