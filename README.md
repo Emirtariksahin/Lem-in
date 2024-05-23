@@ -23,7 +23,7 @@ git clone https://github.com/Emirtariksahin/Lem-in.git
 ```go 
 cd Lem-in/service 
 ```
-Prepare the input file:
+### Prepare the input file:
 
 Ensure you have an input file formatted as follows and place it in the testler directory:
 
@@ -41,11 +41,11 @@ import
 [node2]-[node3]
 ...
 ```
-Run the program:
+### Run the program:
 ```go
 go run . input.txt
 ```
-Replace input.txt with the name of your input file.
+* Replace input.txt with the name of your input file.
 
 ### Input File Format
 The input file should be structured in the following way:
