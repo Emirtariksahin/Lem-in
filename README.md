@@ -58,21 +58,17 @@ The input file should be structured in the following way:
 * Following lines: Connections between nodes in the format [node1]-[node2].
 >Example Input File
 ```
-5
+4
 ##start
-A 0 0
+0 0 3
+2 2 5
+3 4 0
 ##end
-E 4 4
-B 1 1
-C 2 2
-D 3 3
-A-B
-B-C
-C-D
-D-E
-A-C
-B-D
-C-E
+1 8 3
+0-2
+2-3
+3-1
+
 ```
 >Output
 ```
