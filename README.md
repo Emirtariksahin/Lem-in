@@ -39,8 +39,8 @@ import
 [node1]-[node2]
 [node2]-[node3]
 ...
-Run the program:
 ```
+Run the program:
 ```go
 go run . [input].txt
 ```
