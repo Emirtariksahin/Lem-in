@@ -20,8 +20,9 @@ Clone the repository:
 ```go
 git clone https://github.com/Emirtariksahin/Lem-in.git
 ```
+```go 
 cd Lem-in/service 
-
+```
 Prepare the input file:
 
 Ensure you have an input file formatted as follows and place it in the testler directory:
