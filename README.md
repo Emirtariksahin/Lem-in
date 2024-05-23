@@ -42,7 +42,7 @@ import
 ```
 Run the program:
 ```go
-go run . [input].txt
+go run . input.txt
 ```
 Replace input.txt with the name of your input file.
 
