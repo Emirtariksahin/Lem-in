@@ -108,7 +108,7 @@ func main() {
 	// Zaman ölçümü bitir
 	elapsed := time.Since(startTime)
 	println()
-	fmt.Printf("Kodun çalışması %.8f saniye sürdü.\n", elapsed.Seconds())
+	fmt.Printf("This code took %.8f seconds to run.\n", elapsed.Seconds())
 }
 
 // Yolları filtreler ve çakışan odaları çıkarır
