@@ -103,7 +103,7 @@ Round 6: L4-1
 * convertPathsToString(paths [][]Node): Converts paths represented by nodes to string format.
 * convertToNodePaths(paths [][]string, graph Graph): Converts string paths back to node paths.
 * printNodePaths(paths [][]Node): Prints the paths in terms of node names.
-YollariFiltrele(paths [][]string, antCount int): Filters paths to avoid node overlaps.
+* FilterRoad(paths [][]string, antCount int): Filters paths to avoid node overlaps.
 * SimulateAnts(graph *Graph, ants int, start, end *Node, allPaths [][]Node, finalNodePaths []Node): Simulates the movement of ants along the paths.
 >>>>Notes
 * Ensure the input file is correctly formatted, especially the coordinates and connections.
