@@ -85,14 +85,6 @@ func main() {
 	startNode := graph.FindNodeByName(start)
 	endNode := graph.FindNodeByName(end)
 
-	// Bilgileri yazdır
-	fmt.Println("Karınca sayısı:", antsayisi)
-	fmt.Println("Koordinatlar:", kordinatlar)
-	fmt.Println("Başlangıç Koordinatı:", start)
-	fmt.Println("Bitiş Koordinatı:", end)
-	fmt.Println("Bağlantılar:", baglantilar)
-	fmt.Println("Graf oluşturuldu:", graph)
-
 	// Tüm yolları bul
 	allPaths := graph.FindAllPathsBFS(startNode, endNode)
 
@@ -103,29 +95,24 @@ func main() {
 	// Yolları string formatına çevir
 	stringPaths := convertPathsToString(allPaths)
 
-	filtrelenmisyollar := YollariFiltrele(stringPaths, antsayisi)
+	filtrelenmisyollar := FilterRoad(stringPaths, antsayisi)
 
 	// Düğümler olarak bitiş düğümü eklenmiş benzersiz yolları yazdır
 	finalNodePaths := convertToNodePaths(filtrelenmisyollar, graph)
 	a := finalNodePaths[0]
-	//stringi düğümlere dönüştürdüğün değerleri yazdır
-	fmt.Println("\nDüğümler Olarak Bitiş Düğümü Eklenmiş Benzersiz Filtrelenmiş Yollar:")
-	printNodePaths(finalNodePaths)
 
-	//bir boşluk bırak
 	println()
-
 	//Karıncaları Hareket Ettir
 	SimulateAnts(graph, antsayisi, startNode, endNode, finalNodePaths, a)
-	println()
 
 	// Zaman ölçümü bitir
 	elapsed := time.Since(startTime)
+	println()
 	fmt.Printf("Kodun çalışması %.8f saniye sürdü.\n", elapsed.Seconds())
 }
 
 // Yolları filtreler ve çakışan odaları çıkarır
-func YollariFiltrele(yollar [][]string, karincaSayisi int) [][]string {
+func FilterRoad(yollar [][]string, karincaSayisi int) [][]string {
 	var uygunYollar [][]string // Filtrelenmiş yolları saklamak için dilim
 
 	// İki yolun ara odalarda çakışıp çakışmadığını kontrol eden yardımcı fonksiyon
@@ -224,15 +211,4 @@ func convertToNodePaths(paths [][]string, graph *Graph) [][]*Node {
 		finalNodePaths = append(finalNodePaths, nodePath)
 	}
 	return finalNodePaths
-}
-
-// Düğümleri yazdıran fonksiyon
-func printNodePaths(paths [][]*Node) {
-	for i, path := range paths {
-		fmt.Printf("Path %d: ", i)
-		for _, node := range path {
-			fmt.Printf("%s ", node.Name)
-		}
-		fmt.Println()
-	}
 }
