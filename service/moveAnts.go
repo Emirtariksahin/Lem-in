@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// SimulateAnts fonksiyonu, verilen graf ve yollar ile karıncaların hareketini simüle eder
+// SimulateAnts fonksiyonu, verilen graf ve yollar ile karıncaların hareketini simüle eder.
 func SimulateAnts(graph *Graph, ants int, start, end *Node, allPaths [][]*Node, finalNodePaths []*Node) {
 	// Eğer başlangıç ve bitiş noktası arasında yol yoksa uyarı ver ve çık
 	if len(allPaths) == 0 {
