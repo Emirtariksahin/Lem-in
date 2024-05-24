@@ -1,67 +1,67 @@
 package main
 
-// Yolları filtreler ve çakışan odaları çıkarır
-func FilterRoad(yollar [][]string, karincaSayisi int) [][]string {
-	var uygunYollar [][]string // Filtrelenmiş yolları saklamak için dilim
+// Filters roads and removes conflicting rooms
+func FilterRoads(roads [][]string, antCount int) [][]string {
+	var suitableRoads [][]string // Slice to store filtered roads
 
-	// İki yolun ara odalarda çakışıp çakışmadığını kontrol eden yardımcı fonksiyon
-	odalarCakisiyorMu := func(yol1, yol2 []string) bool {
-		odalar := make(map[string]bool)             // İlk yolun odalarını tutmak için bir harita
-		for _, oda := range yol1[1 : len(yol1)-1] { // Başlangıç ve bitiş odalarını hariç tut
-			odalar[oda] = true // Haritaya oda ekle
+	// Helper function to check if two roads have overlapping intermediate rooms
+	roomsOverlap := func(road1, road2 []string) bool {
+		rooms := make(map[string]bool)                 // Map to hold rooms of the first road
+		for _, room := range road1[1 : len(road1)-1] { // Exclude start and end rooms
+			rooms[room] = true // Add room to the map
 		}
-		for _, oda := range yol2[1 : len(yol2)-1] { // İkinci yolun odalarını kontrol et
-			if odalar[oda] { // Eğer oda ilk yolda varsa, çakışma var demektir
+		for _, room := range road2[1 : len(road2)-1] { // Check rooms of the second road
+			if rooms[room] { // If room exists in the first road, there is an overlap
 				return true
 			}
 		}
-		return false // Çakışma yok
+		return false // No overlap
 	}
 
-	// En fazla sayıda çakışmayan yolu bulmak için tüm kombinasyonları dene
-	var kombinasyonlariDeneyerekBul func([][]string, int, []int)
-	var enIyiSecim []int // En iyi seçimleri tutmak için dilim
-	enFazlaYol := 0      // Şu ana kadar bulunan en fazla çakışmayan yol sayısı
+	// Try all combinations to find the maximum number of non-overlapping roads
+	var tryCombinations func([][]string, int, []int)
+	var bestSelection []int // Slice to hold the best selections
+	maxRoads := 0           // Maximum number of non-overlapping roads found so far
 
-	// Tüm kombinasyonları denemek için yardımcı fonksiyon
-	kombinasyonlariDeneyerekBul = func(yollar [][]string, index int, secilenler []int) {
-		// Eğer seçilen yolların sayısı şu ana kadarki en fazlaysa, en iyi seçimi güncelle
-		if len(secilenler) > enFazlaYol {
-			enFazlaYol = len(secilenler)
-			enIyiSecim = make([]int, len(secilenler))
-			copy(enIyiSecim, secilenler) // Seçimleri kopyala
+	// Helper function to try all combinations
+	tryCombinations = func(roads [][]string, index int, selected []int) {
+		// If the number of selected roads is the most so far, update the best selection
+		if len(selected) > maxRoads {
+			maxRoads = len(selected)
+			bestSelection = make([]int, len(selected))
+			copy(bestSelection, selected) // Copy the selections
 		}
 
-		// Kalan yolları dene
-		for i := index; i < len(yollar); i++ {
-			cakisiyor := false // Çakışma durumunu kontrol etmek için bayrak
-			for _, sec := range secilenler {
-				// Eğer seçilmiş yollarla yeni yol çakışıyorsa, bayrağı ayarla ve döngüyü kır
-				if odalarCakisiyorMu(yollar[sec], yollar[i]) {
-					cakisiyor = true
+		// Try remaining roads
+		for i := index; i < len(roads); i++ {
+			overlaps := false // Flag to check overlap
+			for _, sel := range selected {
+				// If the new road overlaps with any selected roads, set the flag and break
+				if roomsOverlap(roads[sel], roads[i]) {
+					overlaps = true
 					break
 				}
 			}
-			// Eğer çakışma yoksa, yeni yolu seçilenlere ekle ve kombinasyonları dene
-			if !cakisiyor {
-				secilenler = append(secilenler, i)
-				kombinasyonlariDeneyerekBul(yollar, i+1, secilenler)
-				secilenler = secilenler[:len(secilenler)-1] // Geriye doğru izleme (backtracking)
+			// If no overlap, add the new road to the selected and try combinations
+			if !overlaps {
+				selected = append(selected, i)
+				tryCombinations(roads, i+1, selected)
+				selected = selected[:len(selected)-1] // Backtracking
 			}
 		}
 	}
 
-	// Kombinasyonları başlat
-	kombinasyonlariDeneyerekBul(yollar, 0, []int{})
+	// Start combinations
+	tryCombinations(roads, 0, []int{})
 
-	// En iyi seçimlere göre uygun yolları ekle
-	for _, index := range enIyiSecim {
-		uygunYollar = append(uygunYollar, yollar[index])
-		// Eğer uygun yollar karınca sayısına ulaştıysa, döngüyü kır
-		if len(uygunYollar) == karincaSayisi {
+	// Add suitable roads based on the best selection
+	for _, index := range bestSelection {
+		suitableRoads = append(suitableRoads, roads[index])
+		// If suitable roads reach the ant count, break the loop
+		if len(suitableRoads) == antCount {
 			break
 		}
 	}
 
-	return uygunYollar // Filtrelenmiş yolları döndür
+	return suitableRoads // Return filtered roads
 }

@@ -95,7 +95,7 @@ func main() {
 	// Yolları string formatına çevir
 	stringPaths := convertPathsToString(allPaths)
 
-	filtrelenmisyollar := FilterRoad(stringPaths, antsayisi)
+	filtrelenmisyollar := FilterRoads(stringPaths, antsayisi)
 
 	// Düğümler olarak bitiş düğümü eklenmiş benzersiz yolları yazdır
 	finalNodePaths := convertToNodePaths(filtrelenmisyollar, graph)
@@ -110,7 +110,6 @@ func main() {
 	println()
 	fmt.Printf("This code took %.8f seconds to run.\n", elapsed.Seconds())
 }
-
 
 // Graf düğümlerini isimle bulma fonksiyonu
 func (graph *Graph) FindNodeByName(name string) *Node {

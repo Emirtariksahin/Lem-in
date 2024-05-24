@@ -8,7 +8,7 @@ import (
 //
 // readInputFile fonksiyonu, verilen dosya adından bir dosya okur ve satırları bir dilim olarak döndürür.
 func readInputFile(fileName string) ([]string, error) {
-	file, err := os.Open("testler/" + fileName) // Dosyayı açar
+	file, err := os.Open("test/" + fileName) // Dosyayı açar
 	if err != nil {
 		return nil, err // Hata varsa hata döndürür
 	}
