@@ -2,7 +2,6 @@ package main
 
 //
 import (
-	"fmt"
 	"strings"
 )
 
@@ -38,20 +37,4 @@ func createGraph(kordinatlar map[string][2]int, baglantilar []string) *Graph {
 	// Grafı oluştur
 	graph := &Graph{Nodes: nodes, Edges: edges}
 	return graph
-}
-
-// ... (Graph ve Node yapıları burada tanımlı olmalı)
-// Assume Graph, Node, and other necessary structures and methods are defined here
-func (g *Graph) String() string {
-	var nodesStr string
-	for _, node := range g.Nodes {
-		nodesStr += fmt.Sprintf("[%s %v] ", node.Name, node.Coordinates)
-	}
-
-	var edgesStr string
-	for _, edge := range g.Edges {
-		edgesStr += fmt.Sprintf("[%s-%s] ", edge.Start.Name, edge.End.Name)
-	}
-
-	return fmt.Sprintf("Nodes: %s\nEdges: %s", nodesStr, edgesStr)
 }
